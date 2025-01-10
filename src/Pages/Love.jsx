@@ -374,7 +374,7 @@ const ShiningHeartWithFireworks = () => {
   return (
     <>
       <canvas ref={canvasRef} style={{ display: "block", background: "black" }} />
-      <audio ref={audioRef} src="/music/Funds.mp3" loop />
+      <audio ref={audioRef} src="/music/Funds.mp4" loop />
       
       {/* Button to play music */}
       {!audioPlaying && (
