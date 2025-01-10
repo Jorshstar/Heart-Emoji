@@ -194,17 +194,25 @@ import React, { useEffect, useRef, useState } from "react";
 const ShiningHeartWithFireworks = () => {
   const canvasRef = useRef(null);
   const audioRef = useRef(null); // Reference for the audio
-  const [audioPlaying, setAudioPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(false); // State to track if the audio is playing
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+
+    // Resize canvas to fit the screen
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    resizeCanvas(); // Initialize canvas size
+
+    window.addEventListener("resize", resizeCanvas); // Adjust on window resize
 
     const audioElement = audioRef.current;
-    if (audioElement && audioPlaying) {
-      audioElement.play(); // Only play if audioPlaying is true
+    if (audioElement && isPlaying) {
+      audioElement.play();
     }
 
     const fireworks = [];
@@ -318,7 +326,7 @@ const ShiningHeartWithFireworks = () => {
     const drawText = () => {
       if (heartCompleted) {
         ctx.globalAlpha = 1;
-        ctx.fillStyle = "pink";
+        ctx.fillStyle = "white";
         ctx.font = "bold 30px Arial";
         ctx.textAlign = "center";
         ctx.fillText(text[0], canvas.width / 2, canvas.height / 2 - 20);
@@ -364,38 +372,35 @@ const ShiningHeartWithFireworks = () => {
         audioElement.currentTime = 0;
       }
     };
-  }, [audioPlaying]);
+  }, [isPlaying]);
 
-  // Handle Play Music Button
-  const handlePlayMusic = () => {
-    setAudioPlaying(true); // Set state to true to start the music
+  const handleAudioToggle = () => {
+    setIsPlaying((prev) => !prev);
   };
 
   return (
     <>
       <canvas ref={canvasRef} style={{ display: "block", background: "black" }} />
       <audio ref={audioRef} src="/music/Funds.mp4" loop />
-      
-      {/* Button to play music */}
-      {!audioPlaying && (
-        <button
-          onClick={handlePlayMusic}
-          style={{
-            position: "absolute",
-            top: "20px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            padding: "10px 20px",
-            background: "red",
-            color: "white",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Play Music
-        </button>
-      )}
+      <button
+        onClick={handleAudioToggle}
+        style={{
+          position: "absolute",
+          bottom: "20px",
+          left: "50%",
+          transform: "translateX(-50%)",
+          padding: "10px 20px",
+          backgroundColor: "rgba(255, 0, 0, 0.7)",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
+          fontSize: "16px",
+          cursor: "pointer",
+          zIndex: 1000,
+        }}
+      >
+        {isPlaying ? "Pause Music" : "Play Music"}
+      </button>
     </>
   );
 };
