@@ -193,22 +193,20 @@ import React, { useEffect, useRef, useState } from "react";
 
 const ShiningHeartWithFireworks = () => {
   const canvasRef = useRef(null);
-  const audioRef = useRef(null); // Reference for the audio
-  const [isPlaying, setIsPlaying] = useState(false); // State to track if the audio is playing
+  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
 
-    // Resize canvas to fit the screen
     const resizeCanvas = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
     };
 
-    resizeCanvas(); // Initialize canvas size
-
-    window.addEventListener("resize", resizeCanvas); // Adjust on window resize
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
 
     const audioElement = audioRef.current;
     if (audioElement && isPlaying) {
@@ -220,7 +218,6 @@ const ShiningHeartWithFireworks = () => {
     const text = ["I Love you Bisola", "My stubborn bby"];
     let heartCompleted = false;
 
-    // Heart Path Calculation
     const heartPath = (t) => {
       const x = canvas.width / 2 + 250 * Math.sin(t) ** 3;
       const y =
@@ -232,7 +229,6 @@ const ShiningHeartWithFireworks = () => {
       return { x, y };
     };
 
-    // Firework class
     class Firework {
       constructor(x, y) {
         this.x = x;
@@ -244,7 +240,7 @@ const ShiningHeartWithFireworks = () => {
       createParticles() {
         for (let i = 0; i < 50; i++) {
           const angle = (Math.PI * 2 * i) / 50;
-          const speed = Math.random() * 4 + 2;
+          const speed = Math.random() * 5 + 2;
           this.particles.push({
             x: this.x,
             y: this.y,
@@ -276,16 +272,15 @@ const ShiningHeartWithFireworks = () => {
       }
     }
 
-    // Star class
     class Star {
       constructor(x, y) {
         this.x = x;
         this.y = y;
-        this.size = Math.random() * 5 + 5; // Dynamic size for variety
+        this.size = Math.random() * 5 + 5;
         this.color = `hsl(${Math.random() * 360}, 100%, 80%)`;
         this.twinkleSpeed = Math.random() * 0.05 + 0.02;
         this.opacity = Math.random();
-        this.twinkleDirection = Math.random() > 0.5 ? 1 : -1; // Twinkle effect
+        this.twinkleDirection = Math.random() > 0.5 ? 1 : -1;
       }
 
       update() {
@@ -304,12 +299,10 @@ const ShiningHeartWithFireworks = () => {
       }
     }
 
-    // Add Fireworks
-    const addFirework = () => {
-      fireworks.push(new Firework(Math.random() * canvas.width, Math.random() * canvas.height));
+    const addFirework = (x, y) => {
+      fireworks.push(new Firework(x, y));
     };
 
-    // Draw Heart Progressively
     let progress = 0;
     const drawHeart = () => {
       if (progress > 2 * Math.PI) {
@@ -320,9 +313,13 @@ const ShiningHeartWithFireworks = () => {
       const { x, y } = heartPath(progress);
       stars.push(new Star(x, y));
       progress += 0.05;
+
+      // Add a moderate number of fireworks while drawing the heart
+      for (let i = 0; i < 3; i++) {
+        addFirework(x, y);
+      }
     };
 
-    // Draw Text Inside Heart
     const drawText = () => {
       if (heartCompleted) {
         ctx.globalAlpha = 1;
@@ -332,10 +329,15 @@ const ShiningHeartWithFireworks = () => {
         ctx.fillText(text[0], canvas.width / 2, canvas.height / 2 - 20);
         ctx.fillStyle = "pink";
         ctx.fillText(text[1], canvas.width / 2, canvas.height / 2 + 30);
+
+        // Reduce fireworks around the text
+        for (let i = 0; i < 2; i++) {
+          addFirework(canvas.width / 2, canvas.height / 2 - 20);
+          addFirework(canvas.width / 2, canvas.height / 2 + 30);
+        }
       }
     };
 
-    // Animation Loop
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -359,9 +361,25 @@ const ShiningHeartWithFireworks = () => {
       requestAnimationFrame(animate);
     };
 
-    // Fireworks to Introduce the Drawing
-    addFirework();
-    const fireworkInterval = setInterval(addFirework, 1000);
+    const fireworkInterval = setInterval(() => {
+      if (heartCompleted) {
+        // Reduce fireworks frequency after heart is complete
+        addFirework(
+          Math.random() * canvas.width,
+          Math.random() * canvas.height
+        );
+      } else {
+        // Frequent fireworks during heart drawing
+        addFirework(
+          Math.random() * canvas.width,
+          Math.random() * canvas.height
+        );
+        addFirework(
+          Math.random() * canvas.width,
+          Math.random() * canvas.height
+        );
+      }
+    }, 1000);
 
     animate();
 
